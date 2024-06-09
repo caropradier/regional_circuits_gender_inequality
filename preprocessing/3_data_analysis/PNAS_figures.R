@@ -90,17 +90,11 @@ latam_meta$level1[latam_meta$level1 == "Engineering And Technology" ] <- "Engine
 ###figure 1####
 
 fig1_table <- latam_meta %>% 
-  inner_join(.,(paper_level_tables$aux_gender_props),
-             by="Pub_ID") %>% 
-  inner_join(.,(paper_level_tables$aux_number_authors),
-             by="Pub_ID") %>%
   left_join(.,journal_aux, by = c("Pub_ID" = "pub_id"))
 
 ffig1a_table <- latam_meta %>% 
   inner_join(.,(paper_level_tables$paper_gender_dist),
              by="Pub_ID") %>% 
-  inner_join(.,(paper_level_tables$aux_number_authors),
-             by="Pub_ID") %>%
   left_join(.,journal_aux, by = c("Pub_ID" = "pub_id"))
 
 ffig1b_table <- latam_meta %>% 
@@ -115,7 +109,7 @@ ffig1b_table <- latam_meta %>%
 
 test_size_fig1 <- 10
 
-#####figure 1d#####
+#####figure 1a#####
 
 plot_a <- ffig1a_table%>% 
   filter(!is.na(latam_journal)) %>% 
@@ -161,7 +155,7 @@ ffig1a_table%>%
   
   
 
-#####figure 1a#####
+#####figure 1b#####
 
 plot_b <- ffig1b_table%>% 
   group_by(pub_year) %>% 
@@ -189,13 +183,13 @@ plot_b <- ffig1b_table%>%
   labs(x = "Publication year", 
        y = "Women authors / \n Women authorship",
        color = "",  linetype = "",
-       title = "C"
+       title = "B"
   )+
   #geom_hline(yintercept = .5, size=.1)+
   guides(fill = guide_legend(reverse=TRUE))
 
 
-#####figure 1b#####
+#####figure 1c#####
 
 
 plot_c <- ffig1a_table%>% 
@@ -227,9 +221,9 @@ plot_c <- ffig1a_table%>%
   scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
   labs(y = "Published in Latin American \n journals or conferences",
        x = "Publication year", color = "",linetype ="",
-       title= "B")
+       title= "C")
 
-#####figure 1c#####
+#####figure 1d#####
 
 plot_d <- ffig1b_table%>% 
   group_by(pub_year) %>% 
@@ -243,13 +237,14 @@ plot_d <- ffig1b_table%>%
                group_by(pub_year) %>% 
                summarise("Women authorship" =mean(Women)) )) %>% 
   mutate(gap = (`Women authors`- `Women authorship`)/`Women authors`) %>% 
-  ggplot(.,aes(y=gap,x=as.numeric(pub_year),group = 1))+
-  geom_line()+
+  ggplot(.,aes(y=gap,x=as.numeric(pub_year)))+
+  geom_point(size=.2)+
+  geom_smooth(color = "black", size=.5,fill = "lightgray")+
   theme_minimal()+
   theme(legend.position = "bottom")+
   theme(text = element_text(size = test_size_fig1))+
   #scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
-  scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
+  scale_y_continuous(labels = function(x) paste0(x*100,"%"),limits = c(0.1,NA))+
   labs(x = "Publication year", 
        y = "Gap between women authors \n and women authorship",
        title = "D"
@@ -443,7 +438,7 @@ plot_c <- real_1 %>%
   theme(text = element_text(size = 12),
         axis.title.x = element_text(size = 11))+
   scale_fill_brewer(palette = "Paired",direction = 1)+
-  labs(y = "Ratio between real and expected % \n of publications in Latin America",
+  labs(y = "Ratio between observed and expected \n % of publications in Latin America",
        x = "",
        title = "C")+
   geom_hline(yintercept = 0,size=.5)+
@@ -610,7 +605,7 @@ labeling_info_hand <- summary %>%
   filter(labeled ==1) %>% 
   select(topic,name,count,representation,representative_docs,labeled)
 
-#write.xlsx(labeling_info_hand,"topic_table_scatter.xlsx")
+#write.xlsx(labeling_info_hand,"preprocessing/3_data_analysis/topic_table_scatter.xlsx")
 
 
 labeling_info_hand <- summary %>% 
@@ -632,7 +627,7 @@ labeling_info_hand <- summary %>%
   filter(labeled ==1) %>% 
   select(topic,name,count,representation,representative_docs,labeled)
 
-#write.xlsx(labeling_info_hand,"topic_table_scatter_b.xlsx")
+#write.xlsx(labeling_info_hand,"preprocessing/3_data_analysis/topic_table_scatter_b.xlsx")
 
 
 ####figure 4#####
@@ -722,6 +717,8 @@ plot_b <-  gr_summary_quant_origin %>%
 #####figure 4C#####
 
 bootstrap_coefficients <-readRDS("results/bootstrap_confidence.RDS")
+bootstrap_coefficients$level1[bootstrap_coefficients$level1 == "Medical And Health Sciences" ] <- "Medical and Health Sciences" 
+bootstrap_coefficients$level1[bootstrap_coefficients$level1 == "Engineering And Technology" ] <- "Engineering and Technology" 
 
 plot_c <- base_table %>% 
   filter(!is.na(level1)) %>% 
@@ -765,3 +762,4 @@ plot_c <- base_table %>%
 (plot_a + plot_b) / plot_c + plot_layout(heights = c(3/8, 5/8))
 
 ggsave('results/figures_PNAS/impact.png', width = 10, height = 10, dpi = 350,bg = "white")
+

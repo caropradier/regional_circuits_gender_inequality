@@ -15,25 +15,16 @@ latam_authors <- read_delim("data/latam/latam_authors_1990.csv",
 )%>% 
   distinct(Pub_ID, author_id,country_code,gender,.keep_all = TRUE) 
 
-latam_meta <- read_delim("data/latam/latam_meta_1990.csv", 
-                         delim = ";", escape_double = FALSE, 
-                         #col_names = TRUE, 
-                         col_names = c('Pub_ID', 'pub_year','source_title', 'source_type',
-                                       'level1', 'level2', 'n_cits'),
-                         trim_ws = TRUE
-                         
-)
-
 names(latam_meta)
 names(latam_authors)
 
 
-gender_assign <- latam_authors %>% 
-  left_join(.,latam_meta) %>% 
-  group_by(pub_year, gender) %>% 
-  summarise(n = n_distinct(author_id)) %>% 
-  group_by(pub_year) %>% 
-  mutate(prop = n/sum(n))
+# gender_assign <- latam_authors %>% 
+#   left_join(.,latam_meta) %>% 
+#   group_by(pub_year, gender) %>% 
+#   summarise(n = n_distinct(author_id)) %>% 
+#   group_by(pub_year) %>% 
+#   mutate(prop = n/sum(n))
 
 # gender_assign %>% 
 #   ggplot(.,aes(x = pub_year,y = prop, fill = gender))+
@@ -54,37 +45,37 @@ latam_authors <- latam_authors %>%
   select(-gender) %>% 
   left_join(.,full_inference)
 
-# export_nulls2 <- latam_authors %>% 
-#      filter(is.na(gender)) %>% 
-#     select(author_id) %>% 
+# export_nulls2 <- latam_authors %>%
+#      filter(is.na(gender)) %>%
+#     select(author_id) %>%
 #     unique()
 
 #saveRDS(export_nulls2,"null_authors.RDS")
 
-gender_assign <- latam_authors %>% 
-  left_join(.,latam_meta) %>% 
-  group_by(pub_year, gender) %>% 
-  summarise(n = n_distinct(author_id)) %>% 
-  group_by(pub_year) %>% 
-  mutate(prop = n/sum(n))
-
-
-# gender_assign %>% 
-#   mutate(gender = factor(case_when(gender == "INI"~"Initiales",
-#                                    gender == "UNI" | gender == "UNK"~"Inconnu",
-#                                    gender == "Men"~"Homme",
-#                                    gender == "Women"~"Femme"),
-#                          levels = c("Initiales","Inconnu","Femme","Homme"))) %>% 
-#   group_by(gender,pub_year) %>% 
-#   mutate(n = sum(n),
-#          prop = sum(prop)) %>% 
-#   unique() %>% 
-#   ggplot(.,aes(x = pub_year,y = prop, fill = gender))+
-#   geom_col(position = "stack")+
-#   theme_minimal()+
-#   scale_fill_viridis(discrete = TRUE)+
-#   scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
-#   labs(fill = "Genre inféré",x = "Année de publication",y="")
+ # gender_assign <- latam_authors %>%
+ #   left_join(.,latam_meta) %>%
+ #   group_by(pub_year, gender) %>%
+ #   summarise(n = n_distinct(author_id)) %>%
+ #   group_by(pub_year) %>%
+ #   mutate(prop = n/sum(n))
+ # 
+ # 
+ # gender_assign %>%
+ #   mutate(gender = factor(case_when(gender == "INI"~"Initiales",
+ #                                    gender == "UNI" | gender == "UNK"~"Inconnu",
+ #                                    gender == "Men"~"Homme",
+ #                                    gender == "Women"~"Femme"),
+ #                          levels = c("Initiales","Inconnu","Femme","Homme"))) %>%
+ #   group_by(gender,pub_year) %>%
+ #   mutate(n = sum(n),
+ #          prop = sum(prop)) %>%
+ #   unique() %>%
+ #   ggplot(.,aes(x = pub_year,y = prop, fill = gender))+
+ #   geom_col(position = "stack")+
+ #   theme_minimal()+
+ #   scale_fill_viridis(discrete = TRUE)+
+ #   scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
+ #   labs(fill = "Genre inféré",x = "Année de publication",y="")
 
 # gender_assign %>% 
 #   filter(pub_year%in% c(1993:2002)) %>% 
@@ -94,6 +85,7 @@ gender_assign <- latam_authors %>%
 
 saveRDS(latam_authors,"data/latam/latam_authors_1990.RDS")
 
+#latam_authors <- readRDS("data/latam/latam_authors_1990.RDS")
 
 ##
 
@@ -160,40 +152,6 @@ paper_latam_dist <- latam_authors %>%
 sum(paper_latam_dist$`Latin American author`)/(sum(paper_latam_dist$`Latin American author`) + sum(paper_latam_dist$`Non Latin American author`))
 #0.8764687
 
-aux_gender_props <-  latam_authors %>% 
-  filter(gender %in% c("Men","Women")) %>% 
-  group_by(Pub_ID,gender) %>% 
-  summarise(n = n_distinct(author_id)) %>% 
-  group_by(Pub_ID) %>% 
-  mutate(n = n/sum(n))  %>% 
-  pivot_wider(id_cols = "Pub_ID", names_from = "gender", values_from = "n",values_fill = 0) %>% 
-  mutate(comp = factor(case_when(Men > Women & Men != 1  ~ "Women minority",
-                                 Women >= Men & Women != 1 ~ "Women majority",
-                                 Women == 1 ~ "Only women",
-                                 Men == 1 ~ "Only men"),
-                       levels=c("Only men","Women minority","Women majority","Only women"))) %>% 
-  select(Pub_ID,"gender_comp"="comp")
-
-paper_level_tables$aux_gender_props <- aux_gender_props
-
-aux_number_authors <- latam_authors %>% 
-  group_by(Pub_ID) %>% 
-  summarise(n_collaborators = n_distinct(author_id)) 
-
-paper_level_tables$aux_number_authors <- aux_number_authors
-
-aux_first_author <- latam_authors %>% 
-  group_by(Pub_ID) %>% 
-  #keep first author
-  filter(author_seq == min(author_seq)) %>% 
-  #if more than one author is identified as first author but it's the same person, that's ok
-  distinct(Pub_ID,author_id, country_code,gender,.keep_all = TRUE) %>% 
-  #otherwise, I remove them
-  group_by(Pub_ID) %>%
-  filter(n() == 1) %>% 
-  select(Pub_ID,"first_author_id" = "author_id","first_author_gender" = "gender","first_author_country_code" = "country_code")
-
-paper_level_tables$aux_first_author <- aux_first_author
 
 saveRDS(paper_level_tables,"results/paper_level_tables_1990.RDS")
 
