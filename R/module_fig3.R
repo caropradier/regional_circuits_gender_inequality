@@ -1,13 +1,23 @@
 fig3_plot_server <- function(id) {
   moduleServer(id, function(input, output, session) {
-    plot <- function(dis) {
+    plot <- function(dis,kw) {
       
       d <- results_list$plot_3_table %>% 
-        filter(level1 %in% dis)
+        mutate(tag = ifelse(my_label == "", paste0(label), my_label)) %>% 
+        filter(level1 %in% dis) 
+      
+      if(kw == ""){
+        d
+      } else {
+        d <- d %>% 
+          filter(grepl(kw, representation))
+      }
+       
       
       p <- ggplot(data = d,aes(x=women,y=latam,size=count,color = fct_reorder(level1,order), 
-                               text = paste0('</br>Representative terms: ',representation,
-                                             '</br><b>',level1,'</b>',
+                               text = paste0('</br><b>', tag,'</b>',
+                                             '</br><i>',level1,'</i>',
+                                             '</br>Representative terms: ',representation,
                                              '</br>Women authorship: ',round(women*100,2),'%',
                                              '</br>Published in Latin American journals or conferences: ',round(latam*100,2),'%')
                                ))+
@@ -31,7 +41,7 @@ fig3_plot_server <- function(id) {
     }
     
     output$plot <- renderPlotly({
-      plot(input$input_discipline)
+      plot(input$input_discipline, input$keyword)
     })
   })
 }
@@ -43,14 +53,15 @@ fig3_plot_ui <- function(id) {
     sidebarLayout(
       sidebarPanel(
         selectInput(ns("input_discipline"),
-                    label = "Select discipline",
+                    label = "Select disciplines",
                     choices = unique(results_list$plot_3_table$level1),
                     selected = unique(results_list$plot_3_table$level1),
                     multiple = TRUE
-        )
+        ),
+        textInput(ns("keyword"), "Search keyword:"),
         , width = 3),
-      mainPanel(h2("Topic space"),
-        plotlyOutput(ns("plot"), height = 800)%>% withSpinner(type = 5, color ="black")
+      mainPanel(h2("The Latin American topic space"),
+        plotlyOutput(ns("plot"), height = 700)%>% withSpinner(type = 5, color ="black")
                 )
     )
   )
