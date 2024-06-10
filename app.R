@@ -30,7 +30,10 @@ server <- function(input, output, session) {
   ##########
   
   # Output modules ----------------------------------------------------------
-  sample_plot_server("ejemplo")
+  fig1_plot_server("fig1")
+  fig2_plot_server("fig2")
+  fig3_plot_server("fig3")
+  fig4_plot_server("fig4")
 }
 
 

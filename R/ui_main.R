@@ -22,7 +22,10 @@ main_ui <- {
   navbarPage(
     "Science for whom?",
     about_ui,
-    sample_plot_ui("ejemplo"),
+    fig1_plot_ui("fig1"),
+    fig2_plot_ui("fig2"),
+    fig3_plot_ui("fig3"),
+    fig4_plot_ui("fig4"),
     methods
     
   )
