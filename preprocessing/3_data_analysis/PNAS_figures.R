@@ -139,7 +139,7 @@ plot_a <- ffig1a_table%>%
 
 #yearly growth rate
 
-ffig1a_table%>% 
+growth_rates <- ffig1a_table%>% 
   filter(!is.na(latam_journal)) %>% 
   group_by(pub_year) %>% 
   summarise(w_n_latam = sum(Women[latam_journal!="Latin American journal"]),
@@ -152,8 +152,21 @@ ffig1a_table%>%
   # geom_line()
   summarise(w = mean(w_growth, na.rm = TRUE),
             m = mean(m_growth, na.rm = TRUE))
+
+#extrapolation
+
+growth_rates$w
+w_2022 <- 26096.2777
+growth_rates$m
+m_2022 <- 43293.7223
   
-  
+vec_w <- cumprod(c(w_2022, rep((1+growth_rates$w), 60)))
+vec_m <-cumprod(c(m_2022, rep((1+growth_rates$m), 60)))
+
+any(vec_w > vec_m)
+
+vec_w[55] > vec_m[55]
+
 
 #####figure 1b#####
 
@@ -224,7 +237,69 @@ plot_c <- ffig1a_table%>%
 
 #####figure 1d#####
 
-plot_d <- ffig1b_table%>% 
+# plot_d <- ffig1b_table%>% 
+#   group_by(pub_year) %>% 
+#   summarise(Women =n_distinct(author_id[gender=="Women"]),
+#             n = n_distinct(author_id)) %>% 
+#   ungroup() %>% 
+#   mutate("Women authors" = Women/n) %>% 
+#   select(-Women,-n) %>% 
+#   left_join(.,
+#             (ffig1a_table%>% 
+#                group_by(pub_year) %>% 
+#                summarise("Women authorship" =mean(Women)) )) %>% 
+#   mutate(gap = (`Women authors`- `Women authorship`)/`Women authors`) %>% 
+#   ggplot(.,aes(y=gap,x=as.numeric(pub_year)))+
+#   geom_point(size=.2)+
+#   geom_smooth(color = "black", size=.5,fill = "lightgray")+
+#   theme_minimal()+
+#   theme(legend.position = "bottom")+
+#   theme(text = element_text(size = test_size_fig1))+
+#   #scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
+#   scale_y_continuous(labels = function(x) paste0(x*100,"%"),limits = c(0.1,NA))+
+#   labs(x = "Publication year", 
+#        y = "Gap between women authors \n and women authorship",
+#        title = "D"
+#   )+
+#   guides(fill = guide_legend(reverse=TRUE))
+
+#women and men productivity gap
+
+n_authors <- ffig1b_table%>%
+  group_by(pub_year) %>%
+  summarise(Women =n_distinct(author_id[gender=="Women"]),
+            Men =n_distinct(author_id[gender=="Men"])) %>%
+  ungroup() |>
+  pivot_longer(c("Women","Men"), names_to = "gender", values_to = "authors")
+
+n_pubs <- ffig1a_table%>%
+  group_by(pub_year) %>%
+  summarise(Women =sum(Women),
+            Men =sum(Men))|>
+  pivot_longer(c("Women","Men"), names_to = "gender", values_to = "pubs")
+
+n_authors |>
+  left_join(n_pubs, by = c("pub_year","gender")) |>
+  mutate(productivity = pubs/authors) |>
+  select(-pubs,-authors) |>
+  pivot_wider(id_cols = "pub_year", names_from = "gender", values_from = "productivity") |>
+  mutate(gap = (Men - Women)/Men) |>
+  ggplot(aes(y=gap,x=as.numeric(pub_year),group = 1))+
+  geom_point(size=.2)+
+  geom_smooth(color = "black", size=.5,fill = "lightgray")+
+  theme_minimal()
+
+gender_productivity_gap <- n_authors |>
+  left_join(n_pubs, by = c("pub_year","gender")) |>
+  mutate(productivity = pubs/authors) |>
+  select(-pubs,-authors) |>
+  pivot_wider(id_cols = "pub_year", names_from = "gender", values_from = "productivity") |>
+  mutate(gender_gap = (Men - Women)/Men)
+
+#coeff <- 0.6735751
+coeff <- 0.6
+
+plot_d <-ffig1b_table%>% 
   group_by(pub_year) %>% 
   summarise(Women =n_distinct(author_id[gender=="Women"]),
             n = n_distinct(author_id)) %>% 
@@ -236,44 +311,30 @@ plot_d <- ffig1b_table%>%
                group_by(pub_year) %>% 
                summarise("Women authorship" =mean(Women)) )) %>% 
   mutate(gap = (`Women authors`- `Women authorship`)/`Women authors`) %>% 
-  ggplot(.,aes(y=gap,x=as.numeric(pub_year)))+
-  geom_point(size=.2)+
-  geom_smooth(color = "black", size=.5,fill = "lightgray")+
+  left_join(.,gender_productivity_gap, by = "pub_year") %>% 
+  select(pub_year,"Women authors wrt women authorships" = "gap","Productivity gap" = "gender_gap") %>% 
+  #pivot_longer(!pub_year, names_to = "ind", values_to = "value") %>% 
+  ggplot(.,aes(x=as.numeric(pub_year)))+
+  geom_point(aes(y = `Women authors wrt women authorships`),size=.2,color = "#6A3D9A")+
+  geom_point(aes(y = `Productivity gap`*coeff),size=.2,color = "#33A02C")+
+  geom_smooth(aes(y = `Women authors wrt women authorships`), size=.5,color = "#6A3D9A",fill = "lightgray")+
+  geom_smooth(aes(y = `Productivity gap`*coeff), size=.5,color = "#33A02C",fill = "lightgray")+
+  scale_y_continuous(labels = function(x) paste0(x*100,"%"),
+                     name = "Gap between women authors \n and women authorship",
+                     sec.axis = sec_axis(~./coeff, name="Gender productivity gap",
+                                         labels = function(x) paste0(x*100,"%")))+
+  
+  annotate( "text",x=2005, y=.145 , label="Women authors \n wrt women authorships", color="#6A3D9A",size=3) +
+  annotate( "text",x=2015, y=.115, label="Productivity gap", color="#33A02C",size=3) +
   theme_minimal()+
-  theme(legend.position = "bottom")+
   theme(text = element_text(size = test_size_fig1))+
   #scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
-  scale_y_continuous(labels = function(x) paste0(x*100,"%"),limits = c(0.1,NA))+
   labs(x = "Publication year", 
-       y = "Gap between women authors \n and women authorship",
        title = "D"
-  )+
-  guides(fill = guide_legend(reverse=TRUE))
+  )
 
-#women and men productivity gap
-
-# n_authors <- ffig1b_table%>%
-#   group_by(pub_year) %>%
-#   summarise(Women =n_distinct(author_id[gender=="Women"]),
-#             Men =n_distinct(author_id[gender=="Men"])) %>%
-#   ungroup() |>
-#   pivot_longer(c("Women","Men"), names_to = "gender", values_to = "authors")
-
-# n_pubs <- ffig1a_table%>%
-#   group_by(pub_year) %>%
-#   summarise(Women =sum(Women),
-#             Men =sum(Men))|>
-#   pivot_longer(c("Women","Men"), names_to = "gender", values_to = "pubs")
-# 
-# n_authors |>
-#   left_join(n_pubs, by = c("pub_year","gender")) |>
-#   mutate(productivity = pubs/authors) |>
-#   select(-pubs,-authors) |>
-#   pivot_wider(id_cols = "pub_year", names_from = "gender", values_from = "productivity") |>
-#   mutate(gap = (Men - Women)/Men) |>
-#   ggplot(aes(y=gap,x=as.numeric(pub_year),group = 1))+
-#   geom_line()+
-#   theme_minimal()
+  #  "#A6CEE3" "#1F78B4" "#B2DF8A" "#33A02C" "#FB9A99" "#E31A1C" "#FDBF6F" "#FF7F00" "#CAB2D6"
+  # "#6A3D9A" "#FFFF99" "#B15928"
 
 #####comp#####
 
