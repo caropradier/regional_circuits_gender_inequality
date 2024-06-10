@@ -207,7 +207,6 @@ plot_c <- ffig1a_table%>%
          "Women" = n_journal_w/n_w ,
          "Men" = n_journal_m/n_m ) %>% 
   pivot_longer(c("Total", "Women","Men"),names_to = "ind", values_to = "prop") |> 
-  mutate(type = ifelse(ind == "Total", "A", "B")) |> 
   
   ggplot(aes(y=prop,x=as.numeric(pub_year),color = ind,group=ind ,linetype = ind ))+
   geom_line()+
@@ -253,25 +252,25 @@ plot_d <- ffig1b_table%>%
 
 #women and men productivity gap
 
-# n_authors <- ffig1b_table%>% 
-#   group_by(pub_year) %>% 
+# n_authors <- ffig1b_table%>%
+#   group_by(pub_year) %>%
 #   summarise(Women =n_distinct(author_id[gender=="Women"]),
-#             Men =n_distinct(author_id[gender=="Men"])) %>% 
-#   ungroup() |> 
+#             Men =n_distinct(author_id[gender=="Men"])) %>%
+#   ungroup() |>
 #   pivot_longer(c("Women","Men"), names_to = "gender", values_to = "authors")
-# 
-# n_pubs <- ffig1a_table%>% 
-#   group_by(pub_year) %>% 
+
+# n_pubs <- ffig1a_table%>%
+#   group_by(pub_year) %>%
 #   summarise(Women =sum(Women),
-#             Men =sum(Men))|> 
+#             Men =sum(Men))|>
 #   pivot_longer(c("Women","Men"), names_to = "gender", values_to = "pubs")
 # 
-# n_authors |> 
-#   left_join(n_pubs, by = c("pub_year","gender")) |> 
-#   mutate(productivity = pubs/authors) |> 
-#   select(-pubs,-authors) |> 
-#   pivot_wider(id_cols = "pub_year", names_from = "gender", values_from = "productivity") |> 
-#   mutate(gap = (Men - Women)/Men) |> 
+# n_authors |>
+#   left_join(n_pubs, by = c("pub_year","gender")) |>
+#   mutate(productivity = pubs/authors) |>
+#   select(-pubs,-authors) |>
+#   pivot_wider(id_cols = "pub_year", names_from = "gender", values_from = "productivity") |>
+#   mutate(gap = (Men - Women)/Men) |>
 #   ggplot(aes(y=gap,x=as.numeric(pub_year),group = 1))+
 #   geom_line()+
 #   theme_minimal()
