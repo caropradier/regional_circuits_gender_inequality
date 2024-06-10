@@ -667,6 +667,7 @@ plot_a <- quants_topics %>%
   pivot_wider(id_cols = "topic", values_from = "citations", names_from = "quants_latam") |> 
   ggplot(aes(x=x) ) +
   geom_density( aes(x = `Global topics`, y = ..density..), fill="#B2DF8A",alpha = .8 ) +
+  annotate( "text",x=.5, y=.2, label="Global topics", color="black",size=3) +
   geom_density( aes(x = `Regional topics`, y = -..density..), fill= "#33A02C" ,alpha = .8 ) +
   annotate( "text",x=.5, y=-0.2, label="Regional topics", color="white",size=3) +
   theme(text= element_text(size = 12))+
