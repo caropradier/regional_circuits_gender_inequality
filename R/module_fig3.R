@@ -53,7 +53,7 @@ fig3_plot_server <- function(id) {
 fig3_plot_ui <- function(id) {
   ns <- NS(id)
   tabPanel(
-    title = "Figure 3",
+    title = "Topics",
     sidebarLayout(
       sidebarPanel(
         selectInput(ns("input_discipline"),
@@ -65,6 +65,7 @@ fig3_plot_ui <- function(id) {
         textInput(ns("keyword"), "Search keyword:"),
         , width = 3),
       mainPanel(h2("The Latin American topic space"),
+                h4("1993-2022"),
         plotlyOutput(ns("plot"), height = 700)%>% withSpinner(type = 5, color ="black")
                 )
     )

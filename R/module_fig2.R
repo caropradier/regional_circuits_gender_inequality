@@ -12,7 +12,7 @@ fig2_plot_server <- function(id) {
         theme(legend.position = "top")+
         scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
         labs(fill = "", x = "", y = "Publications in each circuit",
-             title = "A")+
+             title = "A. Proportion of documents according to the dissemination circuit and discipline")+
         coord_flip()  +
         theme(plot.title = element_text( margin = margin(0,0,-10,0)))+
         scale_x_discrete(labels=function(x) str_wrap(x,10))
@@ -33,7 +33,7 @@ fig2_plot_server <- function(id) {
         theme(legend.position = "bottom")+
         #scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
         labs(fill = "", x = "", y = "Men to women authors ratio",
-             title = "B", subtitle = "\n")+
+             title = "B. Ratio of men to women Latin-American authors, by discipline")+
         coord_flip() +
         theme(plot.title = element_text( margin = margin(0,0,-10,0)))+
         scale_x_discrete(labels=function(x) str_wrap(x,10))
@@ -55,7 +55,7 @@ fig2_plot_server <- function(id) {
         scale_fill_brewer(palette = "Paired",direction = 1)+
         labs(y = "Ratio between observed and expected \n % of publications in Latin America",
              x = "",
-             title = "C")+
+             title = "C. Ratio between observed and expected proportion \n of documents published in Latin-America")+
         geom_hline(yintercept = 0,size=.5)+
         coord_flip()
       
@@ -78,15 +78,19 @@ fig2_plot_server <- function(id) {
 fig2_plot_ui <- function(id) {
   ns <- NS(id)
   tabPanel(
-    title = "Figure 2",
+    title = "Disciplines",
     sidebarLayout(
       sidebarPanel(
          width = 0
       ),
       mainPanel(h2("Disciplines and dissemination circuits by gender"),
                 h4("1993-2022"),
+                br(),
+                br(),
         plotlyOutput(ns("plot_2a"), height = 400)%>% withSpinner(type = 5, color ="black"),
+        br(),
         plotlyOutput(ns("plot_2b"), height = 400)%>% withSpinner(type = 5, color ="black"),
+        br(),
         plotlyOutput(ns("plot_2c"), height = 400)%>% withSpinner(type = 5, color ="black")
         )
     )

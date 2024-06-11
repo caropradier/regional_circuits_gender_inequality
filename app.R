@@ -12,8 +12,17 @@ library(shinyjs)
 ui <- fluidPage(
   theme = shinytheme("paper"),
   
-  # shinyjs::useShinyjs(),
-  # introjsUI(),
+  #define fakeClick for buttons
+  (tags$head(tags$script(HTML('var fakeClick = function(tabName) {
+                                                         var dropdownList = document.getElementsByTagName("a");
+                                                         for (var i = 0; i < dropdownList.length; i++) {
+                                                         var link = dropdownList[i];
+                                                         if(link.getAttribute("data-value") == tabName) {
+                                                         link.click();
+                                                         };
+                                                         }
+                                                         };
+                                                         '))) ),
   
   uiOutput(outputId = "main_ui")
 )

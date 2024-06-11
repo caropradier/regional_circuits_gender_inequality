@@ -21,7 +21,7 @@ fig4_plot_server <- function(id) {
                    position = position_jitter(width = 0, height = 2),alpha = .1)+
         theme(text= element_text(size = 12))+
         theme_minimal()+
-        labs(x = "Average normalized citations",  title = "A")+
+        labs(x = "Average normalized citations",  title = "A. Distribution of  field-normalized citations for each topic")+
         theme(axis.text.y = element_blank()) 
       
       
@@ -50,7 +50,7 @@ fig4_plot_server <- function(id) {
         theme(text= element_text(size = 12))+
         theme_minimal()+
         scale_x_continuous(labels = function(x) paste0(x*100,"%"))+
-        labs(x = "% of Latin American citations",y="density", title = "B")+
+        labs(x = "% of Latin American citations",y="density", title = "B. Distribution of the proportion of citations from Latin-American articles, for each topic")+
         theme(axis.text.y = element_blank()) 
       
       
@@ -72,7 +72,7 @@ fig4_plot_server <- function(id) {
         scale_color_manual(values = c("#A6CEE3","#A6CEE3","#1F78B4","#1F78B4"))+
         labs(color = "", shape = "", 
              x = "", y = "Average normalized citations",
-             title = "C")+
+             title = "C. Average field-normalized citations of publications \n by discipline, gender and dissemination circuit")+
         scale_shape_manual( values = c(16,17,16,17))+
         scale_x_discrete(labels=function(x) str_wrap(x,15))+
         theme(legend.position = "none")
@@ -97,16 +97,20 @@ fig4_plot_server <- function(id) {
 fig4_plot_ui <- function(id) {
   ns <- NS(id)
   tabPanel(
-    title = "Figure 4",
+    title = "Impact",
     sidebarLayout(
       sidebarPanel(
         width = 0
       ),
       mainPanel(h2("Scholarly impact, research topics and publication venue"),
                 h4("1993-2022"),
+                br(),
+                br(),
                 plotlyOutput(ns("plot_4a"), height = 400)%>% withSpinner(type = 5, color ="black"),
+                br(),
                 plotlyOutput(ns("plot_4b"), height = 400)%>% withSpinner(type = 5, color ="black"),
-                plotlyOutput(ns("plot_4c"), height = 600)%>% withSpinner(type = 5, color ="black")
+                br(),
+                plotlyOutput(ns("plot_4c"), height = 500)%>% withSpinner(type = 5, color ="black")
                 )
     )
   )

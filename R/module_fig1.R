@@ -5,7 +5,7 @@ fig1_plot_server <- function(id) {
       
       p <- ggplot(data=d,aes(y=value,x=as.numeric(pub_year),group = ind,color = gender, linetype = Circuit,
                              text = paste0('</br>',gender, ' - ', Circuit,
-                                           '</br>',round(value,0),
+                                           '</br>Number of publications: ',round(value,0),
                                            '</br>Publication year: ',pub_year)
                              ))+
         geom_line()+
@@ -15,7 +15,7 @@ fig1_plot_server <- function(id) {
         scale_color_brewer(palette = "Paired",direction = 1)+
         labs(y = "Number of publications",
              x = "Publication year", fill = "", color = "", linetype = "",
-             title= "A")+
+             title= "A. Number of publications by gender and circuit for Latin-American researchers")+
         theme(legend.position = "none")
       
       
@@ -28,7 +28,7 @@ fig1_plot_server <- function(id) {
       
       p <- ggplot(data =d,aes(y=value,x=as.numeric(pub_year),group = ind,color = ind, linetype = ind,
                               text = paste0('</br>',ind,
-                                            '</br>',round(value*100,2),
+                                            '</br>',round(value*100,2),'%',
                                             '</br>Publication year: ',pub_year)))+
         geom_line()+
         theme_minimal()+
@@ -39,7 +39,7 @@ fig1_plot_server <- function(id) {
         labs(x = "Publication year", 
              y = "Women authors / \n Women authorship",
              color = "",  linetype = "",
-             title = "B"
+             title = "B. Proportion of Latin-American distinct women authors and authorships"
         )+
         guides(fill = guide_legend(reverse=TRUE))+
         theme(legend.position = "none")
@@ -53,7 +53,7 @@ fig1_plot_server <- function(id) {
       
       p <- ggplot(data=d,aes(y=prop,x=as.numeric(pub_year),color = ind,group=ind ,linetype = ind ,
                              text = paste0('</br>',ind,
-                                           '</br>',round(prop*100,2),
+                                           '</br>Published in Latin America: ',round(prop*100,2),'%',
                                            '</br>Publication year: ',pub_year)))+
         geom_line()+
         theme_minimal()+
@@ -64,7 +64,7 @@ fig1_plot_server <- function(id) {
         scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
         labs(y = "Published in Latin American \n journals or conferences",
              x = "Publication year", color = "",linetype ="",
-             title= "C")+
+             title= "C. Proportion of documents published by Latin-American researchers \n that appear in Latin-American journals or conferences")+
         theme(legend.position = "none")
       
       
@@ -112,21 +112,21 @@ fig1_plot_server <- function(id) {
 fig1_plot_ui <- function(id) {
   ns <- NS(id)
   tabPanel(
-    title = "Figure 1",
+    title = "Context",
     sidebarLayout(
       sidebarPanel(
-        selectInput(ns("input_cut"),
-                    label = "select cut",
-                    choices = diamonds$cut %>% unique(),
-                    selected = "Premium",
-                    multiple = FALSE
-        )
+        width = 0
       ),
       mainPanel(h2("Gendered research dissemination circuits in Latin America"),
                 h4("1993-2022"),
+                br(),
+                br(),
                 plotlyOutput(ns("plot_1a"), height = 400)%>% withSpinner(type = 5, color ="black"),
+                br(),
                 plotlyOutput(ns("plot_1b"), height = 400)%>% withSpinner(type = 5, color ="black"),
+                br(),
                 plotlyOutput(ns("plot_1c"), height = 400)%>% withSpinner(type = 5, color ="black")#,
+                # br(),
                # plotlyOutput(ns("plot_1d"), height = 400)%>% withSpinner(type = 5, color ="black")
                 )
     )
