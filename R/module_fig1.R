@@ -4,7 +4,9 @@ fig1_plot_server <- function(id) {
       d <- results_list$plot_1a_table
       
       p <- ggplot(data=d,aes(y=value,x=as.numeric(pub_year),group = ind,color = gender, linetype = Circuit,
-                             text = paste0(round(value,0))
+                             text = paste0('</br>',gender, ' - ', Circuit,
+                                           '</br>',round(value,0),
+                                           '</br>Publication year: ',pub_year)
                              ))+
         geom_line()+
         theme_minimal()+
@@ -13,17 +15,21 @@ fig1_plot_server <- function(id) {
         scale_color_brewer(palette = "Paired",direction = 1)+
         labs(y = "Number of publications",
              x = "Publication year", fill = "", color = "", linetype = "",
-             title= "A")
+             title= "A")+
+        theme(legend.position = "none")
       
       
-      ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))
+      ggplotly(p, tooltip = "text")%>% 
+        layout(font = list(family = "Arial"))
     }
     
     f_plot_1b <- function() {
       d <- results_list$plot_1b_table
       
       p <- ggplot(data =d,aes(y=value,x=as.numeric(pub_year),group = ind,color = ind, linetype = ind,
-                              text = paste0(round(value*100,2))))+
+                              text = paste0('</br>',ind,
+                                            '</br>',round(value*100,2),
+                                            '</br>Publication year: ',pub_year)))+
         geom_line()+
         theme_minimal()+
         theme(legend.position = "bottom")+
@@ -35,7 +41,8 @@ fig1_plot_server <- function(id) {
              color = "",  linetype = "",
              title = "B"
         )+
-        guides(fill = guide_legend(reverse=TRUE))
+        guides(fill = guide_legend(reverse=TRUE))+
+        theme(legend.position = "none")
       
       
       ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))
@@ -45,7 +52,9 @@ fig1_plot_server <- function(id) {
       d <- results_list$plot_1c_table
       
       p <- ggplot(data=d,aes(y=prop,x=as.numeric(pub_year),color = ind,group=ind ,linetype = ind ,
-                             text = paste0(round(prop*100,2))))+
+                             text = paste0('</br>',ind,
+                                           '</br>',round(prop*100,2),
+                                           '</br>Publication year: ',pub_year)))+
         geom_line()+
         theme_minimal()+
         theme(legend.position = "bottom")+
@@ -55,7 +64,8 @@ fig1_plot_server <- function(id) {
         scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
         labs(y = "Published in Latin American \n journals or conferences",
              x = "Publication year", color = "",linetype ="",
-             title= "C")
+             title= "C")+
+        theme(legend.position = "none")
       
       
       ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))

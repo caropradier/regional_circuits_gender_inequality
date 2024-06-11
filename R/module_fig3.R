@@ -33,11 +33,15 @@ fig3_plot_server <- function(id) {
         labs(y="Published in Latin American journals or conferences",
              x="Women authorship",
              color="Discipline")+
-        guides(size = "none")+
-        theme(legend.position = "none")
+        guides(size = "none")#+
+        #theme(legend.position = "none")
       
       
-      ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))
+      ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"),
+                                              legend = list(orientation = "h",  
+                                                            xanchor = "center",  
+                                                            x = 0.5,
+                                                            y=-0.2))
     }
     
     output$plot <- renderPlotly({

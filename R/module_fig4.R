@@ -1,13 +1,24 @@
 fig4_plot_server <- function(id) {
   moduleServer(id, function(input, output, session) {
     f_plot_4a <- function() {
-      d <- results_list$plot_4a_table
+      d <- results_list$plot_4a_table %>% 
+        left_join((results_list$plot_3_table %>%
+                     mutate(tag = ifelse(my_label == "", paste0(label), my_label)) %>% 
+                     select(topic,tag,level1) )) %>% 
+        #add jitter coords
+        mutate(point_x = ifelse(is.na(`Global topics`), `Regional topics`, `Global topics`) ) %>% 
+        mutate(point_x = ifelse(is.na(tag), NA, point_x) )
       
       p <- ggplot(data =d,aes(x=x) ) +
         geom_density( aes(x = `Global topics`, y = ..density..), fill="#B2DF8A",alpha = .8 ) +
         annotate( "text",x=.5, y=.2, label="Global topics", color="black",size=3) +
         geom_density( aes(x = `Regional topics`, y = -..density..), fill= "#33A02C" ,alpha = .8 ) +
         annotate( "text",x=.5, y=-0.2, label="Regional topics", color="white",size=3) +
+        geom_point(aes(x = point_x, y = 0, 
+                       text = paste0('</br><b>',tag,'</b>',
+                                     '</br><i>',level1,'</i>',
+                                     '</br>Average normalized citations: ',round(point_x,2))), 
+                   position = position_jitter(width = 0, height = 2),alpha = .1)+
         theme(text= element_text(size = 12))+
         theme_minimal()+
         labs(x = "Average normalized citations",  title = "A")+
@@ -18,13 +29,24 @@ fig4_plot_server <- function(id) {
     }
     
     f_plot_4b <- function() {
-      d <- results_list$plot_4b_table
+      d <- results_list$plot_4b_table%>% 
+        left_join((results_list$plot_3_table %>%
+                     mutate(tag = ifelse(my_label == "", paste0(label), my_label)) %>% 
+                     select(topic,tag,level1) )) %>% 
+        #add jitter coords
+        mutate(point_x = ifelse(is.na(`Global topics`), `Regional topics`, `Global topics`) ) %>% 
+        mutate(point_x = ifelse(is.na(tag), NA, point_x) )
       
       p <- ggplot(data =d,aes(x=x) ) +
         geom_density( aes(x = `Global topics`, y = ..density..), fill="#B2DF8A",alpha = .8 ) +
         annotate( "text",x=0.2, y=.5, label="Global topics", color="black",size=3) +
         geom_density( aes(x = `Regional topics`, y = -..density..), fill= "#33A02C" ,alpha = .8 ) +
         annotate( "text",x=0.2, y=-.5, label="Regional topics", color="white",size=3)+
+        geom_point(aes(x = point_x, y = 0, 
+                       text = paste0('</br><b>',tag,'</b>',
+                                     '</br><i>',level1,'</i>',
+                                     '</br>Latin American citations: ',round(point_x*100,2),'%')), 
+                   position = position_jitter(width = 0, height = 4),alpha = .1)+
         theme(text= element_text(size = 12))+
         theme_minimal()+
         scale_x_continuous(labels = function(x) paste0(x*100,"%"))+
