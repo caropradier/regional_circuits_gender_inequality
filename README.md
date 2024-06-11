@@ -1,6 +1,6 @@
 ## Science for whom?
 
-This is the repository for the article "Science for whom? The influence of the regional academic circuits on gender inequalities in Latin America"
+This is the repository for the article "Science for whom? The influence of the regional academic circuit on gender inequalities in Latin America"
 
 <br>
 
