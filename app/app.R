@@ -7,6 +7,9 @@ library(plotly)
 library(gridExtra)
 library(shinyjs)
 
+# Source all R scripts in the R/ folder
+r_files <- list.files("R", pattern = "\\.R$", full.names = TRUE)
+sapply(r_files, source)
 
 
 ui <- fluidPage(
