@@ -132,6 +132,9 @@ plot_a <- ffig1a_table%>%
   theme_minimal()+
   theme(legend.position = "bottom")+
   theme(text = element_text(size =test_size_fig1))+
+  theme(axis.text.x = element_text(size =test_size_fig1))+
+  theme(axis.text.y = element_text(size =test_size_fig1))+
+  theme(legend.text = element_text(size =test_size_fig1))+
   scale_color_brewer(palette = "Paired",direction = 1)+
   labs(y = "Number of publications",
        x = "Publication year", fill = "", color = "", linetype = "",
@@ -191,6 +194,9 @@ plot_b <- ffig1b_table%>%
   theme_minimal()+
   theme(legend.position = "bottom")+
   theme(text = element_text(size = test_size_fig1))+
+  theme(axis.text.x = element_text(size =test_size_fig1))+
+  theme(axis.text.y = element_text(size =test_size_fig1))+
+  theme(legend.text = element_text(size =test_size_fig1))+
   scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
   scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
   labs(x = "Publication year", 
@@ -228,6 +234,9 @@ plot_c <- ffig1a_table%>%
   theme_minimal()+
   theme(legend.position = "bottom")+
   theme(text = element_text(size =test_size_fig1))+
+  theme(axis.text.x = element_text(size =test_size_fig1))+
+  theme(axis.text.y = element_text(size =test_size_fig1))+
+  theme(legend.text = element_text(size =test_size_fig1))+
   scale_color_manual(values = c("#A6CEE3", "black", "#1F78B4"))+
   scale_linetype_manual(values=c("dashed", "solid", "dashed")) +  
   scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
@@ -328,6 +337,9 @@ plot_d <-ffig1b_table%>%
   annotate( "text",x=2015, y=.115, label="Productivity gap", color="#33A02C",size=3) +
   theme_minimal()+
   theme(text = element_text(size = test_size_fig1))+
+  theme(axis.text.x = element_text(size =test_size_fig1))+
+  theme(axis.text.y = element_text(size =test_size_fig1))+
+  theme(legend.text = element_text(size =test_size_fig1))+
   #scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
   labs(x = "Publication year", 
        title = "D"
@@ -341,6 +353,9 @@ plot_d <-ffig1b_table%>%
 plot_grid(plot_a, plot_b, plot_c, plot_d, ncol=2, rel_heights = c(1/2, 1/2))
 
 ggsave('results/figures_PNAS/latam_context.png', width = 10, height = 8, dpi = 350,bg = "white")
+
+ggsave('results/figures_PNAS/latam_context.tiff', width = 10, height = 8, dpi = 350,bg = "white", device='tiff')
+
 
 ####figure 2#####
 
@@ -377,6 +392,9 @@ plot_a <- base_table %>%
   geom_col(position = "stack")+
   theme_minimal()+
   theme(text = element_text(size = 12))+
+  theme(axis.text.x = element_text(size =test_size_fig1))+
+  theme(axis.text.y = element_text(size =test_size_fig1))+
+  theme(legend.text = element_text(size =test_size_fig1))+
   scale_fill_brewer(palette = "Dark2",direction = 1)+
   theme(legend.position = "top")+
   scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
@@ -407,6 +425,9 @@ plot_b <- gender_distribution %>%
   geom_col(fill = "#7570B3")+
   theme_minimal()+
   theme(text = element_text(size = 12))+
+  theme(axis.text.x = element_text(size =test_size_fig1))+
+  theme(axis.text.y = element_text(size =test_size_fig1))+
+  theme(legend.text = element_text(size =test_size_fig1))+
   scale_fill_brewer(palette = "Paired",direction = 1)+
   theme(legend.position = "bottom")+
   #scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
@@ -496,7 +517,10 @@ plot_c <- real_1 %>%
   theme_minimal()+
   theme(legend.position = "none")+
   theme(text = element_text(size = 12),
-        axis.title.x = element_text(size = 11))+
+        axis.title.x = element_text(size = 10))+
+  theme(axis.text.x = element_text(size =test_size_fig1))+
+  theme(axis.text.y = element_text(size =test_size_fig1))+
+  theme(legend.text = element_text(size =test_size_fig1))+
   scale_fill_brewer(palette = "Paired",direction = 1)+
   labs(y = "Ratio between observed and expected \n % of publications in Latin America",
        x = "",
@@ -510,6 +534,9 @@ plot_grid(plot_a, plot_b, plot_c, ncol=3,rel_widths = c(.4, .4,.3))
 #grid.arrange(plot_a, plot_b, plot_c,  ncol=2)
 
 ggsave('results/figures_PNAS/disc_circ_gend.png', width = 12, height = 4, dpi = 350,bg = "white")
+
+ggsave('results/figures_PNAS/disc_circ_gend.tiff', width = 12, height = 4, dpi = 350,bg = "white", device='tiff')
+
 
 ####figure 3#####
 
@@ -645,6 +672,8 @@ summary %>%
 
 ggsave('results/figures_PNAS/topic_scatter.png', width = 11, height = 6, dpi = 350,bg = "white")
 
+ggsave('results/figures_PNAS/topic_scatter.tiff', width = 11, height = 6, dpi = 350,bg = "white", device='tiff')
+
 #####Hand labels #######
 labeling_info_hand <- summary %>% 
   arrange(women) %>% 
@@ -700,6 +729,8 @@ order <- base_table %>%
   mutate(order = row_number()) %>% 
   select(-n)
 
+test_size_fig4 <- 12
+
 #####figure 4A#####
 
 topic_table <- base_table %>% 
@@ -731,8 +762,11 @@ plot_a <- quants_topics %>%
   annotate( "text",x=.5, y=.2, label="Global topics", color="black",size=3) +
   geom_density( aes(x = `Regional topics`, y = -..density..), fill= "#33A02C" ,alpha = .8 ) +
   annotate( "text",x=.5, y=-0.2, label="Regional topics", color="white",size=3) +
-  theme(text= element_text(size = 12))+
   theme_minimal()+
+  theme(text= element_text(size = 12))+
+  theme(axis.text.x = element_text(size =test_size_fig4))+
+  theme(axis.text.y = element_text(size =test_size_fig4))+
+  theme(legend.text = element_text(size =test_size_fig4))+
   labs(x = "Average normalized citations",  title = "A")+
   theme(axis.text.y = element_blank()) 
 
@@ -768,8 +802,11 @@ plot_b <-  gr_summary_quant_origin %>%
   annotate( "text",x=0.2, y=.5, label="Global topics", color="black",size=3) +
   geom_density( aes(x = `Regional topics`, y = -..density..), fill= "#33A02C" ,alpha = .8 ) +
   annotate( "text",x=0.2, y=-.5, label="Regional topics", color="white",size=3)+
-  theme(text= element_text(size = 12))+
   theme_minimal()+
+  theme(text= element_text(size = 12))+
+  theme(axis.text.x = element_text(size =test_size_fig4))+
+  theme(axis.text.y = element_text(size =test_size_fig4))+
+  theme(legend.text = element_text(size =test_size_fig4))+
   scale_x_continuous(labels = function(x) paste0(x*100,"%"))+
   labs(x = "% of Latin American citations",y="density", title = "B")+
   theme(axis.text.y = element_blank()) 
@@ -806,8 +843,11 @@ plot_c <- base_table %>%
     aes(ymin = lower_ci, ymax = upper_ci),
     width = 0.3,alpha=.8,
     position=position_dodge(width=.2))+
-  theme(text= element_text(size = 12))+
   theme_minimal()+
+  theme(text= element_text(size = 12))+
+  theme(axis.text.x = element_text(size =test_size_fig4))+
+  theme(axis.text.y = element_text(size =test_size_fig4))+
+  theme(legend.text = element_text(size =test_size_fig4))+
   scale_color_manual(values = c("#A6CEE3","#A6CEE3","#1F78B4","#1F78B4"))+
   labs(color = "", shape = "", 
        x = "", y = "Average normalized citations",
@@ -823,4 +863,6 @@ plot_c <- base_table %>%
 (plot_a + plot_b) / plot_c + plot_layout(heights = c(3/8, 5/8))
 
 ggsave('results/figures_PNAS/impact.png', width = 10, height = 10, dpi = 350,bg = "white")
+
+ggsave('results/figures_PNAS/impact.tiff', width = 10, height = 10, dpi = 350,bg = "white", device='tiff')
 

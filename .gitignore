@@ -3,6 +3,7 @@ results/*
 *.json
 *.pkl
 *.p
+server_notes.md
 
 
 .DS_Store
