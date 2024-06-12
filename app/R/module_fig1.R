@@ -71,26 +71,59 @@ fig1_plot_server <- function(id) {
       ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))
     }
     
-    # f_plot_1d <- function() {
-    #   d <- results_list$plot_1d_table
-    #   
-    #   p <- ggplot(data =d,aes(x = fct_reorder(level1,order), y = prop, fill = latam_journal,
-    #                           text = paste0(round(prop*100,2))))+
-    #     geom_col(position = "stack")+
-    #     theme_minimal()+
-    #     theme(text = element_text(size = 12))+
-    #     scale_fill_brewer(palette = "Dark2",direction = 1)+
-    #     theme(legend.position = "top")+
-    #     scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
-    #     labs(fill = "", x = "", y = "Publications in each circuit",
-    #          title = "A")+
-    #     coord_flip()  +
-    #     theme(plot.title = element_text( margin = margin(0,0,-10,0)))+
-    #     scale_x_discrete(labels=function(x) str_wrap(x,10))
-    #   
-    #   
-    #   ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))
-    # }
+    f_plot_1d_1 <- function() {
+      d <- results_list$plot_1d_table
+
+      p <- ggplot(data = d,aes(x=as.numeric(pub_year)))+
+        geom_point(aes(y = `Women authors wrt women authorships`
+                       ,text = paste0('</br>Women authors wrt women authorships: ', round(`Women authors wrt women authorships`*100,2),'%',
+                                      '</br>Publication year: ',pub_year)
+                       ),size=.2,color = "#6A3D9A")+
+        
+        geom_smooth(aes(y = `Women authors wrt women authorships`), size=.5,color = "#6A3D9A",fill = "lightgray")+
+       
+        scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
+        theme_minimal()+
+        theme(text = element_text(size = test_size_fig1))+
+        theme(axis.text.x = element_text(size =test_size_fig1))+
+        theme(axis.text.y = element_text(size =test_size_fig1))+
+        theme(legend.text = element_text(size =test_size_fig1))+
+        #scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
+        labs(x = "Publication year", 
+             title = "D. Gap between Latin-American women distinct authors and authorships, \n and gender productivity gap"
+        )
+
+
+      ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))
+    }
+    
+    f_plot_1d_2 <- function() {
+      d <- results_list$plot_1d_table
+      
+      p <- ggplot(data = d,aes(x=as.numeric(pub_year)))+
+       
+        geom_point(aes(y = `Productivity gap`
+                       ,text = paste0('</br>Productivity gap: ', round(`Productivity gap`*100,2),'%',
+                                      '</br>Publication year: ',pub_year)
+                       ),size=.2,color = "#33A02C")+
+        
+        geom_smooth(aes(y = `Productivity gap`), size=.5,color = "#33A02C",fill = "lightgray")+
+        
+        scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
+     
+        theme_minimal()+
+        theme(text = element_text(size = test_size_fig1))+
+        theme(axis.text.x = element_text(size =test_size_fig1))+
+        theme(axis.text.y = element_text(size =test_size_fig1))+
+        theme(legend.text = element_text(size =test_size_fig1))+
+        #scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
+        labs(x = "Publication year", 
+             title = ""
+        )
+      
+      
+      ggplotly(p, tooltip = "text")%>% layout(font = list(family = "Arial"))
+    }
     
     output$plot_1a <- renderPlotly({
       f_plot_1a()
@@ -101,9 +134,12 @@ fig1_plot_server <- function(id) {
     output$plot_1c <- renderPlotly({
       f_plot_1c()
     })
-    # output$plot_1d <- renderPlotly({
-    #   f_plot_1d()
-    # })
+    output$plot_1d_1 <- renderPlotly({
+      f_plot_1d_1()
+    })
+    output$plot_1d_2 <- renderPlotly({
+      f_plot_1d_2()
+    })
     
     
   })
@@ -125,9 +161,11 @@ fig1_plot_ui <- function(id) {
                 br(),
                 plotlyOutput(ns("plot_1b"), height = 400)%>% withSpinner(type = 5, color ="black"),
                 br(),
-                plotlyOutput(ns("plot_1c"), height = 400)%>% withSpinner(type = 5, color ="black")#,
-                # br(),
-               # plotlyOutput(ns("plot_1d"), height = 400)%>% withSpinner(type = 5, color ="black")
+                plotlyOutput(ns("plot_1c"), height = 400)%>% withSpinner(type = 5, color ="black"),
+                br(),
+                plotlyOutput(ns("plot_1d_1"), height = 400)%>% withSpinner(type = 5, color ="black"),
+                br(),
+                plotlyOutput(ns("plot_1d_2"), height = 400)%>% withSpinner(type = 5, color ="black")
                 )
     )
   )

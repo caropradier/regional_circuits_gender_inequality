@@ -154,7 +154,37 @@ results_list$plot_1c_table <- plot_1c_table
 
 #####figure 1d#####
 
-plot_1d_table <- latam_meta %>% 
+n_authors <- latam_meta %>% 
+  left_join(.,(latam_authors),
+            by="Pub_ID") %>% 
+  filter(country_code%in%latam_country_codes) %>% 
+  left_join(.,journal_aux, by = c("Pub_ID" = "pub_id")) %>% 
+  filter(gender %in% c("Men","Women")) %>% 
+  select(Pub_ID,pub_year,author_id,gender) %>% 
+  unique()%>%
+  group_by(pub_year) %>%
+  summarise(Women =n_distinct(author_id[gender=="Women"]),
+            Men =n_distinct(author_id[gender=="Men"])) %>%
+  ungroup() |>
+  pivot_longer(c("Women","Men"), names_to = "gender", values_to = "authors")
+
+n_pubs <- latam_meta %>% 
+  inner_join(.,(paper_level_tables$paper_gender_dist),
+             by="Pub_ID") %>% 
+  left_join(.,journal_aux, by = c("Pub_ID" = "pub_id"))%>%
+  group_by(pub_year) %>%
+  summarise(Women =sum(Women),
+            Men =sum(Men))|>
+  pivot_longer(c("Women","Men"), names_to = "gender", values_to = "pubs")
+
+gender_productivity_gap <- n_authors |>
+  left_join(n_pubs, by = c("pub_year","gender")) |>
+  mutate(productivity = pubs/authors) |>
+  select(-pubs,-authors) |>
+  pivot_wider(id_cols = "pub_year", names_from = "gender", values_from = "productivity") |>
+  mutate(gender_gap = (Men - Women)/Men)
+
+plot_1d_table <-  latam_meta %>% 
   left_join(.,(latam_authors),
             by="Pub_ID") %>% 
   filter(country_code%in%latam_country_codes) %>% 
@@ -175,7 +205,9 @@ plot_1d_table <- latam_meta %>%
                left_join(.,journal_aux, by = c("Pub_ID" = "pub_id"))%>% 
                group_by(pub_year) %>% 
                summarise("Women authorship" =mean(Women)) )) %>% 
-  mutate(gap = (`Women authors`- `Women authorship`)/`Women authors`)
+  mutate(gap = (`Women authors`- `Women authorship`)/`Women authors`) %>% 
+  left_join(.,gender_productivity_gap, by = "pub_year") %>% 
+  select(pub_year,"Women authors wrt women authorships" = "gap","Productivity gap" = "gender_gap")
 
 results_list$plot_1d_table <- plot_1d_table
 
@@ -482,4 +514,4 @@ plot_4c_table <- base_table %>%
 results_list$plot_4c_table <- plot_4c_table
 
 ###save####
-saveRDS(results_list,"www/results_list.RDS")
+saveRDS(results_list,"app/www/results_list.RDS")
