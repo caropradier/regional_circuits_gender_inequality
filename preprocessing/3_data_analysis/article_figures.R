@@ -352,9 +352,9 @@ plot_d <-ffig1b_table%>%
 
 plot_grid(plot_a, plot_b, plot_c, plot_d, ncol=2, rel_heights = c(1/2, 1/2))
 
-ggsave('results/figures_PNAS/latam_context.png', width = 10, height = 8, dpi = 350,bg = "white")
+ggsave('results/figures/latam_context.png', width = 10, height = 8, dpi = 350,bg = "white")
 
-ggsave('results/figures_PNAS/latam_context.tiff', width = 10, height = 8, dpi = 350,bg = "white", device='tiff')
+ggsave('results/figures/latam_context.tiff', width = 10, height = 8, dpi = 350,bg = "white", device='tiff')
 
 
 ####figure 2#####
@@ -533,9 +533,9 @@ plot_c <- real_1 %>%
 plot_grid(plot_a, plot_b, plot_c, ncol=3,rel_widths = c(.4, .4,.3))
 #grid.arrange(plot_a, plot_b, plot_c,  ncol=2)
 
-ggsave('results/figures_PNAS/disc_circ_gend.png', width = 12, height = 4, dpi = 350,bg = "white")
+ggsave('results/figures/disc_circ_gend.png', width = 12, height = 4, dpi = 350,bg = "white")
 
-ggsave('results/figures_PNAS/disc_circ_gend.tiff', width = 12, height = 4, dpi = 350,bg = "white", device='tiff')
+ggsave('results/figures/disc_circ_gend.tiff', width = 12, height = 4, dpi = 350,bg = "white", device='tiff')
 
 
 ####figure 3#####
@@ -670,9 +670,9 @@ summary %>%
   guides(size = "none")+
   theme(legend.position = c(0.15, 0.80))
 
-ggsave('results/figures_PNAS/topic_scatter.png', width = 11, height = 6, dpi = 350,bg = "white")
+ggsave('results/figures/topic_scatter.png', width = 11, height = 6, dpi = 350,bg = "white")
 
-ggsave('results/figures_PNAS/topic_scatter.tiff', width = 11, height = 6, dpi = 350,bg = "white", device='tiff')
+ggsave('results/figures/topic_scatter.tiff', width = 11, height = 6, dpi = 350,bg = "white", device='tiff')
 
 #####Hand labels #######
 labeling_info_hand <- summary %>% 
@@ -862,7 +862,7 @@ plot_c <- base_table %>%
 
 (plot_a + plot_b) / plot_c + plot_layout(heights = c(3/8, 5/8))
 
-ggsave('results/figures_PNAS/impact.png', width = 10, height = 10, dpi = 350,bg = "white")
+ggsave('results/figures/impact.png', width = 10, height = 10, dpi = 350,bg = "white")
 
-ggsave('results/figures_PNAS/impact.tiff', width = 10, height = 10, dpi = 350,bg = "white", device='tiff')
+ggsave('results/figures/impact.tiff', width = 10, height = 10, dpi = 350,bg = "white", device='tiff')
 
