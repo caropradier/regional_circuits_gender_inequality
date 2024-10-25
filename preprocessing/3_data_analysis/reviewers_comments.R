@@ -36,6 +36,8 @@ ggsave('results/figures/reviewers_comment.png', width = 10, height = 10,bg = "wh
 
 ####Fig a####
 
+test_size_fig1 <- 10
+
 ffig1a_table <- latam_meta %>% 
   inner_join(.,(paper_level_tables$paper_gender_dist),
              by="Pub_ID") %>% 
@@ -57,7 +59,7 @@ ffig1a_table%>%
                             TRUE ~"Men"))  %>% 
   mutate(level1 = factor(level1,levels = c("Natural Sciences", "Medical and Health Sciences","Engineering and Technology",  "Social Sciences" , "Agricultural Sciences"   , "Humanities" ) )) %>% 
   ggplot(.,aes(y=value,x=as.numeric(pub_year),group = ind,color = gender, linetype = Circuit ))+
-  geom_line()+
+  geom_line(alpha=.8)+
   #geom_vline(aes(xintercept = 2003), size = .2, linetype = "longdash",alpha=.5)+
   #geom_vline(aes(xintercept = 2012), size = .2, linetype = "longdash",alpha=.5)+
   theme_minimal()+
@@ -66,7 +68,8 @@ ffig1a_table%>%
   theme(axis.text.x = element_text(size =test_size_fig1))+
   theme(axis.text.y = element_text(size =test_size_fig1))+
   theme(legend.text = element_text(size =test_size_fig1))+
-  scale_color_brewer(palette = "Paired",direction = 1)+
+  #scale_color_brewer(palette = "Paired",direction = 1)+
+  scale_color_manual(values = wes_palette("Darjeeling1")[c(2,1)])+
   labs(y = "Number of publications",
        x = "Publication year", fill = "", color = "", linetype = "",
        title= "")+
