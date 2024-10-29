@@ -226,7 +226,8 @@ plot_c <- ffig1a_table%>%
   theme(axis.text.x = element_text(size =test_size_fig1))+
   theme(axis.text.y = element_text(size =test_size_fig1))+
   theme(legend.text = element_text(size =test_size_fig1))+
-  scale_color_manual(values = c("#A6CEE3", "black", "#1F78B4"))+
+  #scale_color_manual(values = c("#A6CEE3", "black", "#1F78B4"))+
+  scale_color_manual(values = c(wes_palette("Darjeeling1")[c(1)],"black",wes_palette("Darjeeling1")[c(2)]))+
   scale_linetype_manual(values=c("dashed", "solid", "dashed")) +  
   scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
   labs(y = "Published in Latin American \n journals or conferences",
