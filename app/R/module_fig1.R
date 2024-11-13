@@ -3,20 +3,26 @@ fig1_plot_server <- function(id) {
     f_plot_1a <- function() {
       d <- results_list$plot_1a_table
       
-      p <- ggplot(data=d,aes(y=value,x=as.numeric(pub_year),group = ind,color = gender, linetype = Circuit,
-                             text = paste0('</br>',gender, ' - ', Circuit,
-                                           '</br>Number of publications: ',round(value,0),
-                                           '</br>Publication year: ',pub_year)
-                             ))+
-        geom_line()+
+      p <- ggplot(d,aes(y=value,x=as.numeric(pub_year),group = ind,color = gender, linetype = Circuit,
+                        text = paste0('</br>',gender, ' - ', Circuit,
+                                      '</br>Number of publications: ',round(value,0),
+                                      '</br>Publication year: ',pub_year)
+                        ))+
+        geom_line(alpha=.8)+
         theme_minimal()+
-        theme(legend.position = "bottom")+
+        theme(legend.position = "none")+
         theme(text = element_text(size =test_size_fig1))+
-        scale_color_brewer(palette = "Paired",direction = 1)+
+        theme(axis.text.x = element_text(size =test_size_fig1))+
+        theme(axis.text.y = element_text(size =test_size_fig1))+
+        theme(legend.text = element_text(size =test_size_fig1))+
+        theme(plot.margin = margin(t = 10, r = 10, b = 50, l = 10))+
+        theme(panel.spacing.x = unit(-1, "lines"))+
+        theme(panel.spacing.y = unit(.5, "lines"))+
+        scale_color_manual(values = wes_palette("Darjeeling1")[c(2,1)])+
         labs(y = "Number of publications",
              x = "Publication year", fill = "", color = "", linetype = "",
-             title= "A. Number of publications by gender and circuit for Latin-American researchers")+
-        theme(legend.position = "none")
+             title= "Number of publications by gender circuit and discipline for Latin-American researchers")+
+        facet_wrap(~level1,scales = "free")
       
       
       ggplotly(p, tooltip = "text")%>% 
@@ -39,7 +45,7 @@ fig1_plot_server <- function(id) {
         labs(x = "Publication year", 
              y = "Women authors / \n Women authorship",
              color = "",  linetype = "",
-             title = "B. Proportion of Latin-American distinct women authors and authorships"
+             title = "A. Proportion of Latin-American distinct women authors and authorships"
         )+
         guides(fill = guide_legend(reverse=TRUE))+
         theme(legend.position = "none")
@@ -49,7 +55,8 @@ fig1_plot_server <- function(id) {
     }
     
     f_plot_1c <- function() {
-      d <- results_list$plot_1c_table
+      d <- results_list$plot_1c_table %>% 
+        mutate(ind = factor(ind,levels = c("Women","Total", "Men")))
       
       p <- ggplot(data=d,aes(y=prop,x=as.numeric(pub_year),color = ind,group=ind ,linetype = ind ,
                              text = paste0('</br>',ind,
@@ -59,7 +66,7 @@ fig1_plot_server <- function(id) {
         theme_minimal()+
         theme(legend.position = "bottom")+
         theme(text = element_text(size =test_size_fig1))+
-        scale_color_manual(values = c("#A6CEE3", "black", "#1F78B4"))+
+        scale_color_manual(values = c(wes_palette("Darjeeling1")[c(1)],"black",wes_palette("Darjeeling1")[c(2)]))+
         scale_linetype_manual(values=c("dashed", "solid", "dashed")) +  
         scale_y_continuous(labels = function(x) paste0(x*100,"%"))+
         labs(y = "Published in Latin American \n journals or conferences",
@@ -90,7 +97,7 @@ fig1_plot_server <- function(id) {
         theme(legend.text = element_text(size =test_size_fig1))+
         #scale_color_viridis(discrete = TRUE,option = "F", begin = .2, end =.5)+
         labs(x = "Publication year", 
-             title = "D. Gap between Latin-American women distinct authors and authorships, \n and gender productivity gap"
+             title = "B. Gap between Latin-American women distinct authors and authorships, \n and gender productivity gap"
         )
 
 
@@ -155,18 +162,25 @@ fig1_plot_ui <- function(id) {
       ),
       mainPanel(h2("Gendered research dissemination circuits in Latin America"),
                 h4("1993-2022"),
-                br(),
-                br(),
-                plotlyOutput(ns("plot_1a"), height = 400)%>% withSpinner(type = 5, color ="black"),
+
+                tabsetPanel(
+                  tabPanel("Women's participation in science",
                 br(),
                 plotlyOutput(ns("plot_1b"), height = 400)%>% withSpinner(type = 5, color ="black"),
                 br(),
-                plotlyOutput(ns("plot_1c"), height = 400)%>% withSpinner(type = 5, color ="black"),
-                br(),
                 plotlyOutput(ns("plot_1d_1"), height = 400)%>% withSpinner(type = 5, color ="black"),
                 br(),
-                plotlyOutput(ns("plot_1d_2"), height = 400)%>% withSpinner(type = 5, color ="black")
+                plotlyOutput(ns("plot_1d_2"), height = 400)%>% withSpinner(type = 5, color ="black"),
+                plotlyOutput(ns("plot_1c"), height = 400)%>% withSpinner(type = 5, color ="black"),
+                br()
+                ),
+                tabPanel("Publication growth patterns",
+                         br(),
+                plotlyOutput(ns("plot_1a"), height = 600,width=1000)%>% withSpinner(type = 5, color ="black"),
+                br()
                 )
+                
+                ))
     )
   )
 }

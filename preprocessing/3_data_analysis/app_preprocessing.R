@@ -81,23 +81,41 @@ latam_meta$level1[latam_meta$level1 == "Engineering And Technology" ] <- "Engine
 
 #####figure 1a#####
 
+# plot_1a_table <- latam_meta %>% 
+#   inner_join(.,(paper_level_tables$paper_gender_dist),
+#              by="Pub_ID") %>% 
+#   left_join(.,journal_aux, by = c("Pub_ID" = "pub_id"))%>% 
+#   filter(!is.na(latam_journal)) %>% 
+#   group_by(pub_year) %>% 
+#   summarise(w_latam = sum(Women[latam_journal=="Latin American journal"]),
+#             w_n_latam = sum(Women[latam_journal!="Latin American journal"]),
+#             m_latam = sum(Men[latam_journal=="Latin American journal"]),
+#             m_n_latam = sum(Men[latam_journal!="Latin American journal"]))%>% 
+#   # summarise("In Latin America" = n_distinct(Pub_ID[latam_journal=="Latin American journal"]),
+#   #           "Outside Latin America"= n_distinct(Pub_ID[latam_journal!="Latin American journal"])
+#   pivot_longer(!pub_year,names_to = "ind", values_to = "value")  %>% 
+#   mutate(Circuit = case_when(ind %in% c("w_latam","m_latam") ~ "In Latin America",
+#                              TRUE ~"Outside Latin America"))  %>% 
+#   mutate(gender = case_when(ind %in% c("w_latam","w_n_latam") ~ "Women",
+#                             TRUE ~"Men"))  
+
+
 plot_1a_table <- latam_meta %>% 
   inner_join(.,(paper_level_tables$paper_gender_dist),
              by="Pub_ID") %>% 
-  left_join(.,journal_aux, by = c("Pub_ID" = "pub_id"))%>% 
-  filter(!is.na(latam_journal)) %>% 
-  group_by(pub_year) %>% 
+  left_join(.,journal_aux, by = c("Pub_ID" = "pub_id")) %>% 
+filter(!is.na(latam_journal)) %>% 
+  group_by(pub_year,level1) %>% 
   summarise(w_latam = sum(Women[latam_journal=="Latin American journal"]),
             w_n_latam = sum(Women[latam_journal!="Latin American journal"]),
             m_latam = sum(Men[latam_journal=="Latin American journal"]),
             m_n_latam = sum(Men[latam_journal!="Latin American journal"]))%>% 
-  # summarise("In Latin America" = n_distinct(Pub_ID[latam_journal=="Latin American journal"]),
-  #           "Outside Latin America"= n_distinct(Pub_ID[latam_journal!="Latin American journal"])
-  pivot_longer(!pub_year,names_to = "ind", values_to = "value")  %>% 
+  pivot_longer(!c("pub_year","level1"),names_to = "ind", values_to = "value")  %>% 
   mutate(Circuit = case_when(ind %in% c("w_latam","m_latam") ~ "In Latin America",
                              TRUE ~"Outside Latin America"))  %>% 
   mutate(gender = case_when(ind %in% c("w_latam","w_n_latam") ~ "Women",
-                            TRUE ~"Men"))  
+                            TRUE ~"Men"))  %>% 
+  mutate(level1 = factor(level1,levels = c("Natural Sciences", "Medical and Health Sciences","Engineering and Technology",  "Social Sciences" , "Agricultural Sciences"   , "Humanities" ) )) 
 
 results_list$plot_1a_table <- plot_1a_table
 
@@ -210,6 +228,7 @@ plot_1d_table <-  latam_meta %>%
   select(pub_year,"Women authors wrt women authorships" = "gap","Productivity gap" = "gender_gap")
 
 results_list$plot_1d_table <- plot_1d_table
+
 
 ###figure 2####
 
