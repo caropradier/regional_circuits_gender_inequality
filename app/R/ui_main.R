@@ -18,9 +18,8 @@ about_ui <- tabPanel(
     style = "width: 600px; text-align: justify;",
   h4("About the app"),
   p("Our app is designed to help you further explore and understand our results.
-    To read the full research paper, visit this", a(href ='https://arxiv.org/abs/2407.18783',"site")) 
+    To read the full research paper, visit this", a(href =' https://doi.org/10.1002/asi.24972',"site.")) 
   ),
-  #update publication site!!!
   
 
   
